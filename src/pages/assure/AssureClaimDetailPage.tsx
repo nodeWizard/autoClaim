@@ -4,6 +4,7 @@ import { ArrowLeft } from 'lucide-react'
 import { claimsAtom } from '@/features/atoms'
 import { getClaimById } from '@/data/mock'
 import { PageHeader } from '@/components/layout/PageHeader'
+import { DocumentsList, ClaimPhotos } from '@/components/shared/DocumentsList'
 import { StatusBadge } from '@/components/shared/Badges'
 import { Timeline } from '@/components/shared/Timeline'
 import { Button } from '@/components/ui/button'
@@ -42,14 +43,34 @@ export function AssureClaimDetailPage() {
       />
 
       <div className="grid gap-6 lg:grid-cols-3">
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle>Suivi du dossier</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Timeline events={claim.timeline} assureView />
-          </CardContent>
-        </Card>
+        <div className="space-y-6 lg:col-span-2">
+          <Card>
+            <CardHeader>
+              <CardTitle>Photos du sinistre</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ClaimPhotos documents={claim.documents} />
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Suivi du dossier</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Timeline events={claim.timeline} assureView />
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Documents déposés ({claim.documents.length})</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <DocumentsList documents={claim.documents} hideImagePreviews />
+            </CardContent>
+          </Card>
+        </div>
 
         <div className="space-y-4">
           <Card>
@@ -57,6 +78,7 @@ export function AssureClaimDetailPage() {
               <CardTitle>Résumé</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3 text-sm">
+              <p className="text-muted-foreground">{claim.description}</p>
               <div className="flex justify-between gap-4">
                 <span className="text-muted-foreground">Montant estimé</span>
                 <span className="font-medium">{formatCurrency(claim.amount)}</span>
@@ -109,19 +131,11 @@ export function AssureClaimDetailPage() {
                   Des éléments complémentaires sont nécessaires pour finaliser votre dossier.
                 </p>
               )}
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Documents</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              {claim.documents.map((doc) => (
-                <div key={doc.id} className="rounded-lg border px-3 py-2 text-sm">
-                  {doc.name}
-                </div>
-              ))}
+              {claim.status === 'refuse' && (
+                <p className="rounded-lg bg-red-500/10 p-3 text-red-700 dark:text-red-400">
+                  Votre demande a été refusée. Consultez votre assureur pour plus de détails.
+                </p>
+              )}
             </CardContent>
           </Card>
         </div>

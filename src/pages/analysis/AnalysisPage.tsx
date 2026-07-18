@@ -1,9 +1,12 @@
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { useAtom, useAtomValue } from 'jotai'
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { ArrowLeft, FileText, RotateCcw } from 'lucide-react'
-import { agents, getClaimById, getReportByClaimId } from '@/data/mock'
+import { toast } from 'sonner'
+import { agents, getClaimById } from '@/data/mock'
+import { buildReportFromClaim } from '@/data/mock/reports'
 import { analysisAtom, claimsAtom } from '@/features/atoms'
+import { applyAnalysisToClaim } from '@/features/claims'
 import { AgentCard } from '@/components/analysis/AgentCard'
 import { EvidenceCard, type Evidence } from '@/components/analysis/EvidenceCard'
 import { RiskGauge } from '@/components/analysis/RiskGauge'
@@ -12,7 +15,7 @@ import { RiskBadge } from '@/components/shared/Badges'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { delay, formatPercent } from '@/lib/utils'
-import type { AgentStatus, RiskLevel } from '@/types'
+import type { AgentStatus, Claim, RiskLevel } from '@/types'
 
 function recommendedActions(
   recommendation: string | null | undefined,
@@ -49,15 +52,20 @@ function recommendedActions(
 export function AnalysisPage() {
   const { id } = useParams()
   const claims = useAtomValue(claimsAtom)
-  const claim = getClaimById(claims, id ?? '')
+  const setClaims = useSetAtom(claimsAtom)
+  const claimFromStore = getClaimById(claims, id ?? '')
   const [state, setState] = useAtom(analysisAtom)
+  const [resultClaim, setResultClaim] = useState<Claim | null>(null)
   const runningRef = useRef(false)
 
+  const claim = resultClaim ?? claimFromStore
+
   useEffect(() => {
-    if (!claim) return
-    if (state.claimId !== claim.id) {
+    if (!claimFromStore) return
+    if (state.claimId !== claimFromStore.id) {
+      setResultClaim(null)
       setState({
-        claimId: claim.id,
+        claimId: claimFromStore.id,
         isRunning: false,
         currentAgentIndex: -1,
         agentStatuses: {},
@@ -66,11 +74,12 @@ export function AnalysisPage() {
         isComplete: false,
       })
     }
-  }, [claim, setState, state.claimId])
+  }, [claimFromStore, setState, state.claimId])
 
   async function runAnalysis() {
-    if (!claim || runningRef.current) return
+    if (!claimFromStore || runningRef.current) return
     runningRef.current = true
+    setResultClaim(null)
 
     const statuses: Record<string, AgentStatus> = {}
     const progress: Record<string, number> = {}
@@ -82,7 +91,7 @@ export function AnalysisPage() {
     })
 
     setState({
-      claimId: claim.id,
+      claimId: claimFromStore.id,
       isRunning: true,
       currentAgentIndex: 0,
       agentStatuses: { ...statuses },
@@ -107,7 +116,7 @@ export function AnalysisPage() {
       }
 
       const agentFindings =
-        claim.agentFindings.find((f) => f.agentId === agent.id)?.findings ??
+        claimFromStore.agentFindings.find((f) => f.agentId === agent.id)?.findings ??
         [`Analyse ${agent.name} terminée`]
       findings[agent.id] = agentFindings
       statuses[agent.id] = 'done'
@@ -119,14 +128,22 @@ export function AnalysisPage() {
       await delay(250)
     }
 
+    const updated = applyAnalysisToClaim(claimFromStore, findings)
+    setResultClaim(updated)
+    setClaims((prev) => prev.map((c) => (c.id === updated.id ? updated : c)))
+    toast.success(
+      `Analyse terminée — risque ${updated.riskScore}/100 · ${updated.recommendation}`
+    )
+
     setState((s) => ({ ...s, isRunning: false, isComplete: true }))
     runningRef.current = false
   }
 
   function reset() {
     runningRef.current = false
+    setResultClaim(null)
     setState({
-      claimId: claim?.id ?? null,
+      claimId: claimFromStore?.id ?? null,
       isRunning: false,
       currentAgentIndex: -1,
       agentStatuses: {},
@@ -169,17 +186,18 @@ export function AnalysisPage() {
 
   const reasoning = useMemo(() => {
     if (!claim) return []
-    return claim.agentFindings.flatMap((af) =>
-      af.findings.map((f) => `[${af.agentId.toUpperCase()}] ${f}`)
+    if (claim.agentFindings.length > 0) {
+      return claim.agentFindings.flatMap((af) =>
+        af.findings.map((f) => `[${af.agentId.toUpperCase()}] ${f}`)
+      )
+    }
+    return Object.entries(state.visibleFindings).flatMap(([agentId, list]) =>
+      list.map((f) => `[${agentId.toUpperCase()}] ${f}`)
     )
-  }, [claim])
+  }, [claim, state.visibleFindings])
 
-  const report = claim ? getReportByClaimId(claim.id) : undefined
-  const reportLink = report
-    ? `/assurance/rapports/${report.id}`
-    : claim
-      ? `/assurance/rapports/rpt-${claim.id}`
-      : '/assurance/rapports'
+  const report = claim ? buildReportFromClaim(claim) : undefined
+  const reportLink = report ? `/assurance/rapports/${report.id}` : '/assurance/rapports'
 
   if (!claim) return <p>Dossier introuvable.</p>
 
@@ -292,7 +310,9 @@ export function AnalysisPage() {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Recommandation</span>
-                    <span className="font-semibold capitalize">{claim.recommendation}</span>
+                    <span className="font-semibold capitalize">
+                      {claim.recommendation ?? '—'}
+                    </span>
                   </div>
                   <Button asChild className="mt-2 w-full">
                     <Link to={`/assurance/sinistres/${claim.id}`}>Prendre une décision</Link>
@@ -300,7 +320,7 @@ export function AnalysisPage() {
                   <Button asChild variant="outline" className="w-full">
                     <Link to={reportLink}>
                       <FileText className="size-4" />
-                      {report ? 'Voir le rapport' : 'Ouvrir le rapport'}
+                      Voir le rapport
                     </Link>
                   </Button>
                 </>
@@ -318,7 +338,7 @@ export function AnalysisPage() {
                 <CardTitle className="text-base">Alerte scénario anomalie</CardTitle>
               </CardHeader>
               <CardContent className="text-sm text-muted-foreground">
-                Date déclarée ≠ date constat / EXIF. Score de confiance descendu à 35/100.
+                Date déclarée ≠ date constat / EXIF. Score de confiance descendu.
               </CardContent>
             </Card>
           )}

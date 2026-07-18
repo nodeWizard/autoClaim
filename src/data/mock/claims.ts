@@ -1,4 +1,15 @@
 import type { Claim } from '@/types'
+import { FRONT_DAMAGE_IMAGE, FRONT_DAMAGE_NAME } from '@/assets/demo'
+
+const damagePhoto = (id: string, uploadedAt: string) => ({
+  id,
+  name: FRONT_DAMAGE_NAME,
+  type: 'photo' as const,
+  uploadedAt,
+  url: FRONT_DAMAGE_IMAGE,
+  mimeType: 'image/jpeg',
+})
+
 
 export const initialClaims: Claim[] = [
   {
@@ -27,11 +38,23 @@ export const initialClaims: Claim[] = [
     scenario: 'happy',
     recommendation: 'accepter',
     documents: [
-      { id: 'd1', name: 'Constat amiable.pdf', type: 'constat', uploadedAt: '2026-07-15T14:00:00' },
-      { id: 'd2', name: 'Photo avant droit 1.jpg', type: 'photo', uploadedAt: '2026-07-15T14:00:00' },
-      { id: 'd3', name: 'Photo avant droit 2.jpg', type: 'photo', uploadedAt: '2026-07-15T14:00:00' },
-      { id: 'd4', name: 'Photo latérale.jpg', type: 'photo', uploadedAt: '2026-07-15T14:00:00' },
-      { id: 'd5', name: 'Facture garage.pdf', type: 'facture', uploadedAt: '2026-07-15T14:00:00' },
+      {
+        id: 'd1',
+        name: 'constat-amiable.pdf',
+        type: 'constat',
+        uploadedAt: '2026-07-15T14:00:00',
+        url: '/assets/demo/constat-amiable.pdf',
+        mimeType: 'application/pdf',
+      },
+      damagePhoto('d2', '2026-07-15T14:00:00'),
+      {
+        id: 'd5',
+        name: 'facture-reparation.pdf',
+        type: 'facture',
+        uploadedAt: '2026-07-15T14:00:00',
+        url: '/assets/demo/facture-reparation.pdf',
+        mimeType: 'application/pdf',
+      },
     ],
     timeline: [
       {
@@ -148,9 +171,23 @@ export const initialClaims: Claim[] = [
     scenario: 'anomaly',
     recommendation: 'complement',
     documents: [
-      { id: 'a1', name: 'Constat amiable.pdf', type: 'constat', uploadedAt: '2026-07-15T14:00:00' },
-      { id: 'a2', name: 'Photo dommages.jpg', type: 'photo', uploadedAt: '2026-07-15T14:00:00' },
-      { id: 'a3', name: 'Facture devis.pdf', type: 'facture', uploadedAt: '2026-07-15T14:00:00' },
+      {
+        id: 'a1',
+        name: 'constat-amiable.pdf',
+        type: 'constat',
+        uploadedAt: '2026-07-15T14:00:00',
+        url: '/assets/demo/constat-amiable.pdf',
+        mimeType: 'application/pdf',
+      },
+      damagePhoto('a2', '2026-07-15T14:00:00'),
+      {
+        id: 'a3',
+        name: 'facture-reparation.pdf',
+        type: 'facture',
+        uploadedAt: '2026-07-15T14:00:00',
+        url: '/assets/demo/facture-reparation.pdf',
+        mimeType: 'application/pdf',
+      },
     ],
     timeline: [
       {
@@ -263,8 +300,15 @@ export const initialClaims: Claim[] = [
     location: 'Tunis, Lac 2',
     recommendation: null,
     documents: [
-      { id: 'c3-1', name: 'Photos latérales.zip', type: 'photo', uploadedAt: '2026-07-14T09:20:00' },
-      { id: 'c3-2', name: 'Constat amiable.pdf', type: 'constat', uploadedAt: '2026-07-14T09:20:00' },
+      damagePhoto('c3-1', '2026-07-14T09:20:00'),
+      {
+        id: 'c3-2',
+        name: 'constat-amiable.pdf',
+        type: 'constat',
+        uploadedAt: '2026-07-14T09:20:00',
+        url: '/assets/demo/constat-amiable.pdf',
+        mimeType: 'application/pdf',
+      },
     ],
     timeline: [
       {
@@ -308,7 +352,7 @@ export const initialClaims: Claim[] = [
     location: 'Ariana, Ennasr',
     recommendation: null,
     documents: [
-      { id: 'c4-1', name: 'Photo pare-brise.jpg', type: 'photo', uploadedAt: '2026-07-13T16:45:00' },
+      damagePhoto('c4-1', '2026-07-13T16:45:00'),
     ],
     timeline: [
       {
@@ -345,8 +389,23 @@ export const initialClaims: Claim[] = [
     location: 'Sfax, Zone industrielle',
     recommendation: 'fraude',
     documents: [
-      { id: 'c5-1', name: 'PV police.pdf', type: 'autre', uploadedAt: '2026-07-10T08:10:00' },
-      { id: 'c5-2', name: 'Carte grise.pdf', type: 'autre', uploadedAt: '2026-07-10T08:10:00' },
+      damagePhoto('c5-photo', '2026-07-10T08:10:00'),
+      {
+        id: 'c5-1',
+        name: 'extrait-police.pdf',
+        type: 'autre',
+        uploadedAt: '2026-07-10T08:10:00',
+        url: '/assets/demo/extrait-police.pdf',
+        mimeType: 'application/pdf',
+      },
+      {
+        id: 'c5-2',
+        name: 'notes-assure.txt',
+        type: 'autre',
+        uploadedAt: '2026-07-10T08:10:00',
+        url: '/assets/demo/notes-assure.txt',
+        mimeType: 'text/plain',
+      },
     ],
     timeline: [
       {
@@ -381,6 +440,427 @@ export const initialClaims: Claim[] = [
       note: 'Schéma répétitif. Escalade équipe fraude.',
     },
   },
+  {
+    id: 'clm-6',
+    reference: 'SIN-2026-0716-052',
+    insureeName: 'Youssef Khelifi',
+    insureeId: 'u-assure-1',
+    type: 'auto',
+    title: 'Accrochage parking — Lac 1',
+    description:
+      'Léger choc arrière en manœuvre sur le parking du centre commercial. Bumper endommagé, pas de blessé.',
+    declaredAt: '2026-07-16T11:20:00',
+    incidentDate: '2026-07-16',
+    amount: 980,
+    status: 'recu',
+    riskScore: null,
+    riskLevel: null,
+    confidence: null,
+    plate: '123 TU 4567',
+    cin: '08945612',
+    policyNumber: 'POL-AUTO-2024-11890',
+    vehicleModel: 'Volkswagen Golf 8',
+    phone: '+216 98 456 123',
+    location: 'Tunis, Lac 1',
+    recommendation: null,
+    documents: [
+      damagePhoto('c6-1', '2026-07-16T11:20:00'),
+      {
+        id: 'c6-2',
+        name: 'constat-amiable.pdf',
+        type: 'constat',
+        uploadedAt: '2026-07-16T11:20:00',
+        url: '/assets/demo/constat-amiable.pdf',
+        mimeType: 'application/pdf',
+      },
+    ],
+    timeline: [
+      {
+        id: 'c6t1',
+        at: '2026-07-16T11:20:00',
+        title: 'Déclaration soumise',
+        description: 'Nouveau sinistre parking reçu.',
+        visibleToAssure: true,
+      },
+    ],
+    incoherences: [],
+    agentFindings: [],
+  },
+  {
+    id: 'clm-7',
+    reference: 'SIN-2026-0712-033',
+    insureeName: 'Sami Bouazizi',
+    insureeId: 'u-assure-5',
+    type: 'auto',
+    title: 'Collision carrefour — Sousse',
+    description:
+      'Priorité à droite non respectée par un tiers. Dommages aile avant gauche et phare.',
+    declaredAt: '2026-07-12T18:05:00',
+    incidentDate: '2026-07-12',
+    amount: 3400,
+    status: 'en_analyse',
+    riskScore: 22,
+    riskLevel: 'faible',
+    confidence: 84,
+    plate: '167 TU 3344',
+    cin: '04455667',
+    policyNumber: 'POL-AUTO-2024-90211',
+    vehicleModel: 'Seat Ibiza',
+    phone: '+216 21 445 566',
+    location: 'Sousse, Avenue Habib Bourguiba',
+    recommendation: 'accepter',
+    documents: [
+      damagePhoto('c7-1', '2026-07-12T18:05:00'),
+      {
+        id: 'c7-2',
+        name: 'constat-amiable.pdf',
+        type: 'constat',
+        uploadedAt: '2026-07-12T18:05:00',
+        url: '/assets/demo/constat-amiable.pdf',
+        mimeType: 'application/pdf',
+      },
+    ],
+    timeline: [
+      {
+        id: 'c7t1',
+        at: '2026-07-12T18:05:00',
+        title: 'Déclaration soumise',
+        description: 'Dossier reçu avec constat.',
+        visibleToAssure: true,
+      },
+      {
+        id: 'c7t2',
+        at: '2026-07-12T18:10:00',
+        title: 'Analyse IA en cours',
+        description: 'Chaîne multi-agents démarrée.',
+        visibleToAssure: true,
+      },
+    ],
+    incoherences: [],
+    agentFindings: [
+      {
+        agentId: 'ocr',
+        confidence: 93,
+        findings: ['Constat lisible', 'Immatriculation 167 TU 3344 confirmée'],
+      },
+      {
+        agentId: 'vision',
+        confidence: 88,
+        findings: ['Dommages aile avant gauche cohérents'],
+      },
+    ],
+  },
+  {
+    id: 'clm-8',
+    reference: 'SIN-2026-0711-019',
+    insureeName: 'Ines Mejri',
+    insureeId: 'u-assure-6',
+    type: 'auto',
+    title: 'Dégât stationnement — Hammamet',
+    description: 'Véhicule rayé sur toute la portière conducteur pendant un stationnement en voirie.',
+    declaredAt: '2026-07-11T09:40:00',
+    incidentDate: '2026-07-10',
+    amount: 1250,
+    status: 'accepte',
+    riskScore: 12,
+    riskLevel: 'faible',
+    confidence: 91,
+    plate: '412 TU 7788',
+    cin: '07788990',
+    policyNumber: 'POL-AUTO-2025-11002',
+    vehicleModel: 'Peugeot 208',
+    phone: '+216 58 990 011',
+    location: 'Hammamet, Centre-ville',
+    recommendation: 'accepter',
+    documents: [
+      damagePhoto('c8-1', '2026-07-11T09:40:00'),
+      {
+        id: 'c8-2',
+        name: 'facture-reparation.pdf',
+        type: 'facture',
+        uploadedAt: '2026-07-11T09:40:00',
+        url: '/assets/demo/facture-reparation.pdf',
+        mimeType: 'application/pdf',
+      },
+    ],
+    timeline: [
+      {
+        id: 'c8t1',
+        at: '2026-07-11T09:40:00',
+        title: 'Déclaration soumise',
+        description: 'Sinistre stationnement déclaré.',
+        visibleToAssure: true,
+      },
+      {
+        id: 'c8t2',
+        at: '2026-07-11T10:15:00',
+        title: 'Sinistre accepté',
+        description: 'Indemnisation validée (franchise 500 TND).',
+        visibleToAssure: true,
+      },
+    ],
+    incoherences: [],
+    agentFindings: [
+      {
+        agentId: 'rapport',
+        confidence: 92,
+        findings: ['Risque faible', 'Recommandation : accepter'],
+      },
+    ],
+    decision: {
+      action: 'accepter',
+      by: 'Sarra Mansouri',
+      at: '2026-07-11T10:15:00',
+      note: 'Dossier simple, photos cohérentes.',
+    },
+  },
+  {
+    id: 'clm-9',
+    reference: 'SIN-2026-0709-061',
+    insureeName: 'Hedi Chaabane',
+    insureeId: 'u-assure-7',
+    type: 'auto',
+    title: 'Incendie moteur — Kairouan',
+    description: 'Départ de feu sous le capot après un long trajet. Véhicule immobilisé, pompiers intervenus.',
+    declaredAt: '2026-07-09T21:00:00',
+    incidentDate: '2026-07-09',
+    amount: 11200,
+    status: 'complement',
+    riskScore: 55,
+    riskLevel: 'eleve',
+    confidence: 48,
+    plate: '088 TU 5566',
+    cin: '03322110',
+    policyNumber: 'POL-AUTO-2023-44001',
+    vehicleModel: 'Kia Sportage',
+    phone: '+216 97 221 100',
+    location: 'Kairouan, RN3',
+    recommendation: 'complement',
+    documents: [
+      damagePhoto('c9-1', '2026-07-09T21:00:00'),
+      {
+        id: 'c9-2',
+        name: 'extrait-police.pdf',
+        type: 'contrat',
+        uploadedAt: '2026-07-09T21:00:00',
+        url: '/assets/demo/extrait-police.pdf',
+        mimeType: 'application/pdf',
+      },
+    ],
+    timeline: [
+      {
+        id: 'c9t1',
+        at: '2026-07-09T21:00:00',
+        title: 'Déclaration soumise',
+        description: 'Sinistre incendie déclaré.',
+        visibleToAssure: true,
+      },
+      {
+        id: 'c9t2',
+        at: '2026-07-10T09:00:00',
+        title: 'Complément demandé',
+        description: 'Rapport pompiers et devis atelier requis.',
+        visibleToAssure: true,
+      },
+    ],
+    incoherences: [
+      {
+        id: 'c9i1',
+        title: 'Preuves incomplètes',
+        detail: 'Absence du rapport d’intervention des pompiers.',
+        severity: 'eleve',
+        evidence: ['Checklist documents'],
+      },
+    ],
+    agentFindings: [
+      {
+        agentId: 'fraude',
+        confidence: 70,
+        findings: ['Montant élevé', 'Pièces manquantes'],
+      },
+    ],
+    decision: {
+      action: 'complement',
+      by: 'Sarra Mansouri',
+      at: '2026-07-10T09:00:00',
+      note: 'Attendre rapport pompiers.',
+    },
+  },
+  {
+    id: 'clm-10',
+    reference: 'SIN-2026-0708-028',
+    insureeName: 'Youssef Khelifi',
+    insureeId: 'u-assure-1',
+    type: 'auto',
+    title: 'Bris de glace — La Marsa',
+    description: 'Impact gravillon sur le pare-brise, fissure progressive. Remplacement demandé.',
+    declaredAt: '2026-07-08T14:30:00',
+    incidentDate: '2026-07-08',
+    amount: 720,
+    status: 'accepte',
+    riskScore: 5,
+    riskLevel: 'faible',
+    confidence: 96,
+    plate: '123 TU 4567',
+    cin: '08945612',
+    policyNumber: 'POL-AUTO-2024-11890',
+    vehicleModel: 'Volkswagen Golf 8',
+    phone: '+216 98 456 123',
+    location: 'La Marsa, Route de la Plage',
+    recommendation: 'accepter',
+    documents: [damagePhoto('c10-1', '2026-07-08T14:30:00')],
+    timeline: [
+      {
+        id: 'c10t1',
+        at: '2026-07-08T14:30:00',
+        title: 'Déclaration soumise',
+        description: 'Bris de glace déclaré.',
+        visibleToAssure: true,
+      },
+      {
+        id: 'c10t2',
+        at: '2026-07-08T15:00:00',
+        title: 'Sinistre accepté',
+        description: 'Remplacement pare-brise validé.',
+        visibleToAssure: true,
+      },
+    ],
+    incoherences: [],
+    agentFindings: [
+      {
+        agentId: 'contrat',
+        confidence: 98,
+        findings: ['Garantie bris de glace active', 'Franchise 0 TND'],
+      },
+    ],
+    decision: {
+      action: 'accepter',
+      by: 'Sarra Mansouri',
+      at: '2026-07-08T15:00:00',
+      note: 'Garantie bris de glace applicable.',
+    },
+  },
+  {
+    id: 'clm-11',
+    reference: 'SIN-2026-0707-014',
+    insureeName: 'Rania Ben Ammar',
+    insureeId: 'u-assure-8',
+    type: 'auto',
+    title: 'Collision chaîne — Autoroute A1',
+    description:
+      'Embouteillage soudain, collision en chaîne impliquant 3 véhicules. Responsabilité partagée à évaluer.',
+    declaredAt: '2026-07-07T08:15:00',
+    incidentDate: '2026-07-07',
+    amount: 6800,
+    status: 'en_analyse',
+    riskScore: 41,
+    riskLevel: 'moyen',
+    confidence: 62,
+    plate: '255 TU 9090',
+    cin: '06677889',
+    policyNumber: 'POL-AUTO-2024-55033',
+    vehicleModel: 'Mercedes Classe A',
+    phone: '+216 25 667 788',
+    location: 'Autoroute A1, pk 42',
+    recommendation: 'complement',
+    documents: [
+      damagePhoto('c11-1', '2026-07-07T08:15:00'),
+      {
+        id: 'c11-2',
+        name: 'constat-amiable.pdf',
+        type: 'constat',
+        uploadedAt: '2026-07-07T08:15:00',
+        url: '/assets/demo/constat-amiable.pdf',
+        mimeType: 'application/pdf',
+      },
+    ],
+    timeline: [
+      {
+        id: 'c11t1',
+        at: '2026-07-07T08:15:00',
+        title: 'Déclaration soumise',
+        description: 'Collision en chaîne déclarée.',
+        visibleToAssure: true,
+      },
+      {
+        id: 'c11t2',
+        at: '2026-07-07T09:00:00',
+        title: 'En analyse',
+        description: 'Vérification des constats croisés.',
+        visibleToAssure: true,
+      },
+    ],
+    incoherences: [
+      {
+        id: 'c11i1',
+        title: 'Versions divergentes',
+        detail: 'Le tiers décrit une cinématique différente sur le constat.',
+        severity: 'moyen',
+        evidence: ['Constat page 2', 'Déclaration assuré'],
+      },
+    ],
+    agentFindings: [
+      {
+        agentId: 'fraude',
+        confidence: 65,
+        findings: ['Incohérence partielle des témoignages'],
+      },
+    ],
+  },
+  {
+    id: 'clm-12',
+    reference: 'SIN-2026-0705-003',
+    insureeName: 'Omar Trabelsi',
+    insureeId: 'u-assure-9',
+    type: 'auto',
+    title: 'Vandalisme rétroviseurs — Bizerte',
+    description: 'Deux rétroviseurs cassés pendant la nuit sur parking résidentiel.',
+    declaredAt: '2026-07-05T07:50:00',
+    incidentDate: '2026-07-04',
+    amount: 890,
+    status: 'refuse',
+    riskScore: 35,
+    riskLevel: 'moyen',
+    confidence: 75,
+    plate: '319 TU 1212',
+    cin: '01122334',
+    policyNumber: 'POL-AUTO-2021-00988',
+    vehicleModel: 'Dacia Sandero',
+    phone: '+216 29 334 455',
+    location: 'Bizerte, Cité Olympique',
+    recommendation: 'refuser',
+    documents: [damagePhoto('c12-1', '2026-07-05T07:50:00')],
+    timeline: [
+      {
+        id: 'c12t1',
+        at: '2026-07-05T07:50:00',
+        title: 'Déclaration soumise',
+        description: 'Vandalisme déclaré.',
+        visibleToAssure: true,
+      },
+      {
+        id: 'c12t2',
+        at: '2026-07-05T11:00:00',
+        title: 'Sinistre refusé',
+        description: 'Garantie vandalisme non souscrite sur la police.',
+        visibleToAssure: true,
+      },
+    ],
+    incoherences: [],
+    agentFindings: [
+      {
+        agentId: 'contrat',
+        confidence: 99,
+        findings: ['Option vandalisme absente du contrat'],
+      },
+    ],
+    decision: {
+      action: 'refuser',
+      by: 'Sarra Mansouri',
+      at: '2026-07-05T11:00:00',
+      note: 'Hors garantie.',
+    },
+  },
 ]
 
 /** @deprecated Prefer claimsAtom — kept for seed data helpers */
@@ -390,6 +870,10 @@ export function getClaimById(list: Claim[], id: string) {
   return list.find((c) => c.id === id)
 }
 
-export function getClaimsForAssure(list: Claim[], userId: string) {
-  return list.filter((c) => c.insureeId === userId)
+export function getClaimsForAssure(list: Claim[], userId: string, userName?: string) {
+  return list.filter(
+    (c) =>
+      c.insureeId === userId ||
+      (!!userName && c.insureeName === userName)
+  )
 }

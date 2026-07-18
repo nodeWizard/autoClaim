@@ -143,26 +143,30 @@ export function DeclareClaimPage() {
     if (!isValid || submitting || !auth.user) return
 
     setSubmitting(true)
-    await new Promise((r) => setTimeout(r, 600))
+    try {
+      const claim = await createClaimFromDeclaration({
+        user: auth.user,
+        incidentDate: values.incidentDate,
+        location: values.location,
+        plate: values.plate,
+        cin: values.cin,
+        policyNumber: values.policyNumber,
+        vehicleModel: values.vehicleModel,
+        phone: values.phone,
+        amount: Number(values.amount.replace(',', '.')),
+        description: values.description,
+        files,
+      })
 
-    const claim = createClaimFromDeclaration({
-      user: auth.user,
-      incidentDate: values.incidentDate,
-      location: values.location,
-      plate: values.plate,
-      cin: values.cin,
-      policyNumber: values.policyNumber,
-      vehicleModel: values.vehicleModel,
-      phone: values.phone,
-      amount: Number(values.amount.replace(',', '.')),
-      description: values.description,
-      files,
-    })
-
-    setClaims((prev) => [claim, ...prev])
-    toast.success(`Sinistre ${claim.reference} créé`)
-    setSubmitting(false)
-    navigate(`/assure/sinistres/${claim.id}`)
+      setClaims((prev) => [claim, ...prev])
+      toast.success(`Sinistre ${claim.reference} créé`)
+      navigate(`/assure/sinistres/${claim.id}`)
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Création impossible'
+      toast.error(msg)
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (

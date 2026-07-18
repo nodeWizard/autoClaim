@@ -38,6 +38,9 @@ export interface DocumentRef {
   name: string
   type: 'constat' | 'photo' | 'facture' | 'contrat' | 'autre'
   uploadedAt: string
+  /** Public path or data URL — used to preview the file */
+  url?: string
+  mimeType?: string
 }
 
 export interface Incoherence {

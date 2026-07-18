@@ -1,6 +1,9 @@
 import { Link, useParams } from 'react-router-dom'
+import { useAtomValue } from 'jotai'
 import { ArrowLeft, Printer } from 'lucide-react'
+import { claimsAtom } from '@/features/atoms'
 import { getReport } from '@/data/mock/reports'
+import { DocumentsList } from '@/components/shared/DocumentsList'
 import { EvidenceCard } from '@/components/analysis/EvidenceCard'
 import { Timeline } from '@/components/shared/Timeline'
 import { RiskBadge } from '@/components/shared/Badges'
@@ -10,7 +13,9 @@ import { formatCurrency, formatDate, formatPercent } from '@/lib/utils'
 
 export function ReportDetailPage() {
   const { id } = useParams<{ id: string }>()
-  const report = getReport(id ?? '')
+  const claims = useAtomValue(claimsAtom)
+  const report = getReport(id ?? '', claims)
+  const claim = report ? claims.find((c) => c.id === report.claimId) : undefined
 
   if (!report) {
     return (
@@ -62,6 +67,13 @@ export function ReportDetailPage() {
           <h2 className="mb-3 border-b pb-2 text-lg font-bold">Résumé exécutif</h2>
           <p className="text-sm leading-relaxed">{report.executiveSummary}</p>
         </section>
+
+        {claim && claim.documents.length > 0 ? (
+          <section>
+            <h2 className="mb-3 border-b pb-2 text-lg font-bold">Documents</h2>
+            <DocumentsList documents={claim.documents} hideImagePreviews />
+          </section>
+        ) : null}
 
         <section>
           <h2 className="mb-3 border-b pb-2 text-lg font-bold">Preuves</h2>

@@ -6,6 +6,7 @@ import { claimsAtom } from '@/features/atoms'
 import { getClaimById } from '@/data/mock'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { RiskBadge, StatusBadge } from '@/components/shared/Badges'
+import { DocumentsList, ClaimPhotos } from '@/components/shared/DocumentsList'
 import { Timeline } from '@/components/shared/Timeline'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -52,6 +53,15 @@ export function ClaimDetailPage() {
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
+          <Card>
+            <CardHeader>
+              <CardTitle>Photos du sinistre</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ClaimPhotos documents={claim.documents} />
+            </CardContent>
+          </Card>
+
           <Card>
             <CardHeader>
               <CardTitle>Dossier</CardTitle>
@@ -165,14 +175,10 @@ export function ClaimDetailPage() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Documents</CardTitle>
+              <CardTitle>Documents ({claim.documents.length})</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-2">
-              {claim.documents.map((doc) => (
-                <div key={doc.id} className="rounded-lg border px-3 py-2 text-sm">
-                  {doc.name}
-                </div>
-              ))}
+            <CardContent>
+              <DocumentsList documents={claim.documents} hideImagePreviews />
             </CardContent>
           </Card>
 
